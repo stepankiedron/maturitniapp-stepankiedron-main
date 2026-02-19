@@ -1,13 +1,45 @@
 <?php 
+session_start();
 $pageTitle = 'Přihlášení';
-include 'template/header.php'; 
+require_once('common.php'); 
+include 'template/header.php';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $password = $_POST['password']; 
+
+    $sql = "SELECT id, firstName, lastName, password, email FROM users WHERE email = '$email'";
+    $result = mysqli_query($conn, $sql);
+
+    
+    if (mysqli_num_rows($result) === 1) {
+        $row = mysqli_fetch_assoc($result);
+        $hashedPassword = $row['password'];
+
+        if (password_verify($password, $hashedPassword)) {
+            
+            $_SESSION['user_id'] = $row['id'];
+            $_SESSION['user_name'] = $row['firstName'];
+            $_SESSION['user_email'] = $row['email'];
+            
+            header("Location: index.php");
+            exit();
+
+        } else {
+            $errorMsg = "Zadali jste nesprávné heslo.";
+        }
+    } else {
+        $errorMsg = "Uživatel s tímto emailem neexistuje.";
+    }
+}
 ?>
 
 <section class="auth-section">
     <div class="auth-card">
         <h2>Přihlášení</h2>
         
-        <form action="check_login.php" method="post">
+        <form method="post">
             
             <div class="form-group">
                 <label for="email">Email</label>

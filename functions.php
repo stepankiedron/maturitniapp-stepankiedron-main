@@ -21,5 +21,3 @@ function osoleneHeslo(string $password): string {
     return $salt . $password . chunk_split($salt, 4 ,".");
 }
 ?>
-
-

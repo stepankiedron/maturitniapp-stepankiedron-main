@@ -4,25 +4,20 @@ $pageTitle = 'Registrace';
 include 'template/header.php'; 
 require_once('common.php');
 
-// Zpracování formuláře
-if ($_SERVER["REQUEST_METHOD"] == "POST") 
-    // Získání a ošetření vstupů
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $firstName = isset($_POST['firstName']) ? osetriVstup($_POST['firstName'], 200) : '';
     $lastName = isset($_POST['lastName']) ? osetriVstup($_POST['lastName'], 200) : '';
     $email = isset($_POST['email']) ? osetriVstup($_POST['email'], 200) : '';
     $password = isset($_POST['password']) ? osetriVstup($_POST['password'], 200) : '';
 
-    // Kontrola vyplnění polí
     if (empty($firstName) || empty($lastName) ||empty($email) || empty($password)) {
         echo "Chyba, všechna pole musí být vyplněna.";
     }
 
-    // Kontrola formátu emailu
     if (!jePlatnyEmail($email)) {
         echo "Chyba, neplatný formát emailu.";
     }
 
-    // Další úroveň ošetření vstupů pro SQL dotaz
     $firstName = mysqli_real_escape_string($conn, $firstName);
     $lastName = mysqli_real_escape_string($conn, $lastName);
     $email = mysqli_real_escape_string($conn, $email);
@@ -34,19 +29,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         echo "Chyba: Uživatel s tímto emailem " . htmlspecialchars($email) . " už je zaregistrován.";
     } else {
 
-    // Příprava SQL dotazu pro vložení nového uživatele
     $sql = "INSERT INTO users (firstName, lastName, email, password) VALUES ('$firstName','$lastName', '$email', '$ulozenyHash')";
     
-    // Poslání dotazu na server
     if (mysqli_query($conn, $sql)) {
     $ID_users = mysqli_insert_id($conn);
     echo "Úspěšně jste se registrovali -" . $firstName;
     header('Location: login.php');
     }   else {
-        // Vypsání chyby v případě neúspěchu 
         echo "Chyba: " . mysqli_error($conn);
-    }
-    }
+    }}}
 
 mysqli_close($conn);
 
@@ -56,7 +47,7 @@ mysqli_close($conn);
     <div class="auth-card">
         <h2>Vytvořit účet</h2>
         
-        <form action="registration.php" method="post">
+        <form method="post">
             
             <div class="form-group">
                 <label for="firstName">Jméno</label>
@@ -88,3 +79,4 @@ mysqli_close($conn);
 </section>
 
 <?php include 'template/footer.php'; ?>
+ 

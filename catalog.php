@@ -1,56 +1,94 @@
 <?php
-include 'template/header.php';
-
-$games = [
-    ['id' => 1, 'title' => 'Omori', 'genre' => 'Horror', 'studio' => 'OMOCAT, LLC', 'image' => 'img/omori.png'],
-    ['id' => 2, 'title' => 'Stray', 'genre' => 'Sci-Fi, Adventure',  'studio' => 'BlueTwelve Studio', 'image' => 'img/Stray.png'],
-    ['id' => 3, 'title' => 'Hades', 'genre' => 'Rogue-Like, Action',  'studio' => 'Supergiant Games', 'image' => 'img/Hades.png'],
-    ['id' => 4, 'title' => 'Hollow Knight', 'genre' => 'Souls-Like',  'studio' => 'Team Charry', 'image' => 'img/hollowknight.png'],
-    ['id' => 5, 'title' => 'Celeste', 'genre' => 'Platformer',  'studio' => 'Maddy Makes Games', 'image' => 'img/Celeste.png'],
-    ['id' => 6, 'title' => 'Slay the Spire', 'genre' => 'Card Game, Rogue-Like',  'studio' => 'MegaCrit', 'image' => 'img/SlayTheSpire.png'],
-    ['id' => 7, 'title' => 'Stardew Valley', 'genre' => 'Simulation', 'studio' => 'ConcernedApe', 'image' => 'img/stardewvalley.png'],
-    ['id' => 8, 'title' => 'Cuphead', 'genre' => 'Action', 'studio' => 'Studio MDHR', 'image' => 'img/cuphead.png'],
-    ['id' => 9, 'title' => 'Dead Cells', 'genre' => 'Rogue-Like, Action',   'studio' => 'Motion Twin', 'image' => 'img/deadcells.png'],
-    ['id' => 10,'title' => 'Limbo', 'genre' => 'Puzzle, Adventure, Horror', 'studio' => 'Playdead', 'image' => 'img/limbo.png']
-];
-
-$selectedGenre = $_GET['genre'] ?? 'all';
+require_once 'common.php'; 
+$pageTitle = 'Katalog her';
+include 'template/header.php'; 
+$selected_genre_id = isset($_GET['genre_id']) ? intval($_GET['genre_id']) : 0;
 ?>
 
-<section id="game-catalog" class="main-section">
+<main class="catalog-page">
+    <div class="container">
+        
+        <h1 class="catalog-title">Katalog indie her</h1>
 
-    <h2>Prozkoumej náš katalog her</h2>
+        <div class="filter-wrapper">
+            <form method="GET" action="catalog.php" class="filter-form">
+                <label for="genre-select">Filtrovat podle žánru:</label>
+                
+                <select name="genre_id" id="genre-select" class="filter-select" onchange="this.form.submit()">
+                    
+                    <option value="0" <?php if ($selected_genre_id == 0) echo 'selected'; ?>>Všechny žánry</option>
+                    
+                    <?php
+                   
+                    $sqlGenres = "SELECT * FROM genres ORDER BY name ASC";
+                    $resultGenres = mysqli_query($conn, $sqlGenres);
 
-    <form method="GET" class="genre-filter">
-        <label for="genre">Filtrovat podle žánru:</label>
-        <select name="genre" id="genre" onchange="this.form.submit()">
-            <option value="all"        <?php if ($selectedGenre === 'all') echo 'selected'; ?>>Všechny žánry</option>
-            <option value="Horror"     <?php if ($selectedGenre === 'Horror') echo 'selected'; ?>>Horror</option>
-            <option value="Sci-Fi"     <?php if ($selectedGenre === 'Sci-Fi') echo 'selected'; ?>>Sci-Fi</option>
-            <option value="Adventure"  <?php if ($selectedGenre === 'Adventure') echo 'selected'; ?>>Adventure</option>
-            <option value="Rogue-Like" <?php if ($selectedGenre === 'Rogue-Like') echo 'selected'; ?>>Rogue-Like</option>
-            <option value="Action"     <?php if ($selectedGenre === 'Action') echo 'selected'; ?>>Action</option>
-            <option value="Souls-Like" <?php if ($selectedGenre === 'Souls-Like') echo 'selected'; ?>>Souls-Like</option>
-            <option value="Platformer" <?php if ($selectedGenre === 'Platformer') echo 'selected'; ?>>Platformer</option>
-            <option value="Card Game"  <?php if ($selectedGenre === 'Card Game') echo 'selected'; ?>>Card Game</option>
-        </select>
-    </form>
-
-    <div class="games-grid">
-
-        <?php
-        foreach ($games as $game) {
-            if ($selectedGenre !== 'all' && stripos($game['genre'], $selectedGenre) === false) {
-                continue;
-            }
-
-            include 'card.php';
-        }
-        ?>
-
+                    if ($resultGenres) {
+                        while ($rowG = mysqli_fetch_assoc($resultGenres)) {
+    
+                            $gID = intval($rowG['ID']); 
+                            $gName = htmlspecialchars($rowG['name']);
+                            
+                            if ($selected_genre_id === $gID) {
+                                $selectedAttr = 'selected';
+                            } else {
+                                $selectedAttr = '';
+                            }
+                            
+                            echo "<option value='$gID' $selectedAttr>$gName</option>";
+                        }
+                    }
+                    ?>
+                </select>
+            </form>
+        </div>
+        </form>
     </div>
 
-</section>
+        <div class="games-grid">
+            <?php
+            $sql = "SELECT games.ID, games.title, games.img FROM games";
+
+            if ($selected_genre_id > 0) {
+                $sql .= " JOIN genresgames ON games.ID = genresgames.ID_game";
+                $sql .= " WHERE genresgames.ID_genre = $selected_genre_id";
+            }
+
+            $sql .= " ORDER BY games.ID ASC"; 
+            
+            $result = mysqli_query($conn, $sql);
+
+            if ($result && mysqli_num_rows($result) > 0) {
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $id = $row['ID'];
+                    $title = htmlspecialchars($row['title']);
+                    $imagePath = 'img/' . htmlspecialchars($row['img']);
+                    
+                    if (empty($row['img']) || !file_exists($imagePath)) {
+                        $imagePath = 'img/placeholder.png'; 
+                    }
+                    ?>
+
+                    <div class="game-card">
+                        <a href="game_detail.php?id=<?php echo $id; ?>">
+                            <div class="game-image-wrapper">
+                                <img src="<?php echo $imagePath; ?>" alt="<?php echo $title; ?>">
+                                <div class="game-title-overlay">
+                                    <h3><?php echo $title; ?></h3>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <?php
+                }
+            } else {
+                echo '<div class="no-results">Pro tento žánr jsme nenašli žádné hry.</div>';
+            }
+            ?>
+        </div>
+    </div>
+</main>
 
 <?php 
 include 'template/footer.php';

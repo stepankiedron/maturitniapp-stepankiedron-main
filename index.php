@@ -19,7 +19,7 @@ include 'template/header.php';
 </section>
 
 <section id="video-section">
-    <div class="container-video">
+    <div class="container video">
         <video controls> 
             <source src='img/video/03-MATURITA.mp4' type=video/mp4>
         </video>
