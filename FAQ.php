@@ -1,5 +1,4 @@
 <?php 
-$pageTitle = 'Často kladené dotazy - Indie Hry Katalog';
 include 'template/header.php'; 
 ?>
 
@@ -13,18 +12,18 @@ include 'template/header.php';
     </details>
 
     <details>
-      <summary>Jak funguje váš katalog her?</summary>
-      <p>Katalog momentálně funguje z provizorních dat, která budou později nahrazena databází.</p>
+      <summary>Musím se registrovat, abych mohl aplikaci používat?</summary>
+      <p>Ne, prohlížet katalog her a číst existující recenze můžete i bez přihlášení. Účet potřebujete pouze v případě, že chcete sami psát recenze a hodnotit hry.</p>
     </details>
 
     <details>
-      <summary>Jaké žánry podporujete?</summary>
-      <p>Najdeš u nás akční, adventury, RPG, strategie, simulátory a další.</p>
+      <summary>Proč se musím přihlásit pro napsání recenze?</summary>
+      <p>Chceme udržet kvalitu a důvěryhodnost hodnocení. Přihlášení nám pomáhá předcházet spamu a zajišťuje, že za každým názorem stojí reálný uživatel.</p>
     </details>
 
     <details>
-      <summary>Plánujete přidat uživatelské účty?</summary>
-      <p>Možná v budoucnu, zatím se zaměřujeme na obsah a katalog.</p>
+      <summary>Jak často se žebříček top 10 aktualizuje?</summary>
+      <p>Žebříček se aktualizuje v reálném čase s každou novou recenzí.</p>
     </details>
 
   </section>

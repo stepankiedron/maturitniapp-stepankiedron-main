@@ -83,7 +83,7 @@ $selected_genre_id = isset($_GET['genre_id']) ? intval($_GET['genre_id']) : 0;
                     <?php
                 }
             } else {
-                echo '<div class="no-results">Pro tento žánr jsme nenašli žádné hry.</div>';
+                echo 'Pro tento žánr jsme nenašli žádné hry.';
             }
             ?>
         </div>
